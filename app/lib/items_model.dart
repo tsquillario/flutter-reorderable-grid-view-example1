@@ -5,7 +5,7 @@ class ItemsModel extends ChangeNotifier {
 
   ItemsModel() {
     items = List<String>.generate(
-      25, (int index) => index.toString(),
+      64, (int index) => index.toString(),
       growable: false);
   }
 
