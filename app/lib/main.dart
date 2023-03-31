@@ -85,67 +85,86 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: ChangeNotifierProvider.value(
-          value: itemsModel,
-          child: Consumer<ItemsModel>(builder: (context, model, child) {
-            return ReorderableBuilder(
-                key: _globalKey,
-                enableScrollingWhileDragging: true,
-                enableDraggable: true,
-                fadeInDuration: Duration.zero,
-                onReorder: (ReorderedListFunction reorderedListFunction) {
-                  var items =
-                      reorderedListFunction(model.items) as List<String>;
-                  model.reorderSongs(reorderedItems: items);
-                },
-                builder: (children) {
-                  return SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Column(children: [
-                            Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 5),
-                                child: SizedBox(
-                                    width: 600,
-                                    height: 600,
-                                    child: GridView(
-                                      key: _gridViewKey,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 8,
-                                        mainAxisSpacing: 0,
-                                        crossAxisSpacing: 0,
-                                        childAspectRatio: 1,
-                                      ),
-                                      children: children,
-                                    )))
-                          ])));
-                },
-                children: model.items.mapIndexed((index, item) {
-                  final FlipCardController _controller = FlipCardController();
-                  return FlipCard(
-                    key: ValueKey(item),
-                    controller: _controller,
-                    fill: Fill
-                        .fillBack, // Fill the back side of the card to make in the same size as the front.
-                    direction: FlipDirection.HORIZONTAL,
-                    side: CardSide.FRONT,
-                    flipOnTouch: true,
-                    autoFlipDuration: null,
-                    onFlip: () {},
-                    front: _buildCard(item, Colors.grey, false),
-                    back: _buildCard(item, Colors.greenAccent, false),
-                  );
-                }).toList());
-          }),
+      body: Stack(children: [
+        Center(
+          child: ChangeNotifierProvider.value(
+            value: itemsModel,
+            child: Consumer<ItemsModel>(builder: (context, model, child) {
+              return ReorderableBuilder(
+                  key: _globalKey,
+                  enableScrollingWhileDragging: true,
+                  enableDraggable: true,
+                  fadeInDuration: Duration.zero,
+                  onReorder: (ReorderedListFunction reorderedListFunction) {
+                    var items =
+                        reorderedListFunction(model.items) as List<String>;
+                    model.reorderSongs(reorderedItems: items);
+                  },
+                  builder: (children) {
+                    return InteractiveViewer(
+                        boundaryMargin: const EdgeInsets.all(20),
+                        constrained: false,
+                        scaleEnabled: false,
+                        child: Column(children: [
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 5),
+                              child: SizedBox(
+                                  width: model.defaultSize,
+                                  height: model.defaultSize,
+                                  child: GridView(
+                                    key: _gridViewKey,
+                                    primary: true,
+                                    shrinkWrap: false,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 8,
+                                      mainAxisSpacing: 0,
+                                      crossAxisSpacing: 0,
+                                      childAspectRatio: 1,
+                                    ),
+                                    children: children,
+                                  ))),
+                        ]));
+                  },
+                  children: model.items.mapIndexed((index, item) {
+                    final FlipCardController _controller = FlipCardController();
+                    return SizedBox(
+                        key: ValueKey(item),
+                        width: 60,
+                        height: 60,
+                        child: FlipCard(
+                          controller: _controller,
+                          fill: Fill
+                              .fillBack, // Fill the back side of the card to make in the same size as the front.
+                          direction: FlipDirection.HORIZONTAL,
+                          side: CardSide.FRONT,
+                          flipOnTouch: true,
+                          autoFlipDuration: null,
+                          onFlip: () {},
+                          front: _buildCard(item, Colors.grey, false),
+                          back: _buildCard(item, Colors.greenAccent, false),
+                        ));
+                  }).toList());
+            }),
+          ),
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        Positioned(
+          bottom: 0,
+          right: 0,
+            child: Row(
+          children: [
+            IconButton(
+              icon: new Icon(Icons.remove),
+              onPressed: () => itemsModel.zoomOut(),
+            ),
+            IconButton(
+                icon: new Icon(Icons.add), onPressed: () => itemsModel.zoomIn())
+          ],
+        ))
+      ]), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
