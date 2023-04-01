@@ -58,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final _globalKey = UniqueKey();
   final _gridViewKey = GlobalKey<_MyHomePageState>();
   final itemsModel = ItemsModel();
+  TransformationController _transformationController =
+      TransformationController();
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +83,18 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
+    zoomOut() {
+      setState(() {
+        _transformationController.value.scale(1 * .9);
+      });
+    }
+
+    zoomIn() {
+      setState(() {
+        _transformationController.value.scale(1 * 1.1);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -90,22 +104,29 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ChangeNotifierProvider.value(
             value: itemsModel,
             child: Consumer<ItemsModel>(builder: (context, model, child) {
-              return ReorderableBuilder(
-                  key: _globalKey,
-                  enableScrollingWhileDragging: true,
-                  enableDraggable: true,
-                  fadeInDuration: Duration.zero,
-                  onReorder: (ReorderedListFunction reorderedListFunction) {
-                    var items =
-                        reorderedListFunction(model.items) as List<String>;
-                    model.reorderSongs(reorderedItems: items);
+              return InteractiveViewer(
+                  boundaryMargin: const EdgeInsets.all(20),
+                  constrained: false,
+                  scaleEnabled: false,
+                  transformationController: _transformationController,
+                  onInteractionEnd: (details) {
+                    // Details.scale can give values below 0.5 or above 2.0 and resets to 1
+                    // Use the Controller Matrix4 to get the correct scale.
+                    double correctScaleValue =
+                        _transformationController.value.getMaxScaleOnAxis();
                   },
-                  builder: (children) {
-                    return InteractiveViewer(
-                        boundaryMargin: const EdgeInsets.all(20),
-                        constrained: false,
-                        scaleEnabled: false,
-                        child: Column(children: [
+                  child: ReorderableBuilder(
+                      key: _globalKey,
+                      enableScrollingWhileDragging: true,
+                      enableDraggable: true,
+                      fadeInDuration: Duration.zero,
+                      onReorder: (ReorderedListFunction reorderedListFunction) {
+                        var items =
+                            reorderedListFunction(model.items) as List<String>;
+                        model.reorderSongs(reorderedItems: items);
+                      },
+                      builder: (children) {
+                        return Column(children: [
                           Padding(
                               padding: EdgeInsets.symmetric(
                                   vertical: 0, horizontal: 5),
@@ -127,43 +148,43 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ),
                                     children: children,
                                   ))),
-                        ]));
-                  },
-                  children: model.items.mapIndexed((index, item) {
-                    final FlipCardController _controller = FlipCardController();
-                    return SizedBox(
-                        key: ValueKey(item),
-                        width: 60,
-                        height: 60,
-                        child: FlipCard(
-                          controller: _controller,
-                          fill: Fill
-                              .fillBack, // Fill the back side of the card to make in the same size as the front.
-                          direction: FlipDirection.HORIZONTAL,
-                          side: CardSide.FRONT,
-                          flipOnTouch: true,
-                          autoFlipDuration: null,
-                          onFlip: () {},
-                          front: _buildCard(item, Colors.grey, false),
-                          back: _buildCard(item, Colors.greenAccent, false),
-                        ));
-                  }).toList());
+                        ]);
+                      },
+                      children: model.items.mapIndexed((index, item) {
+                        final FlipCardController _controller =
+                            FlipCardController();
+                        return SizedBox(
+                            key: ValueKey(item),
+                            width: 60,
+                            height: 60,
+                            child: FlipCard(
+                              controller: _controller,
+                              fill: Fill
+                                  .fillBack, // Fill the back side of the card to make in the same size as the front.
+                              direction: FlipDirection.HORIZONTAL,
+                              side: CardSide.FRONT,
+                              flipOnTouch: true,
+                              autoFlipDuration: null,
+                              onFlip: () {},
+                              front: _buildCard(item, Colors.grey, false),
+                              back: _buildCard(item, Colors.greenAccent, false),
+                            ));
+                      }).toList()));
             }),
           ),
         ),
         Positioned(
-          bottom: 0,
-          right: 0,
+            bottom: 0,
+            right: 0,
             child: Row(
-          children: [
-            IconButton(
-              icon: new Icon(Icons.remove),
-              onPressed: () => itemsModel.zoomOut(),
-            ),
-            IconButton(
-                icon: new Icon(Icons.add), onPressed: () => itemsModel.zoomIn())
-          ],
-        ))
+              children: [
+                IconButton(
+                  icon: new Icon(Icons.remove),
+                  onPressed: () => zoomOut(),
+                ),
+                IconButton(icon: new Icon(Icons.add), onPressed: () => zoomIn())
+              ],
+            ))
       ]), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
