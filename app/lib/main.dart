@@ -100,10 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   model.reorderSongs(reorderedItems: items);
                 },
                 builder: (children) {
-                  return SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(children: [
-                            Padding(
+                  return Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0, horizontal: 5),
                                 child: SizedBox(
@@ -112,8 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: GridView(
                                       key: _gridViewKey,
                                       shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
                                       gridDelegate:
                                           const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 8,
@@ -123,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       children: children,
                                     )))
-                          ]));
+                          ;
                 },
                 children: model.items.mapIndexed((index, item) {
                   final FlipCardController _controller = FlipCardController();
