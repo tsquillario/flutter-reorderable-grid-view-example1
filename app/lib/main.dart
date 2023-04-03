@@ -58,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _globalKey = UniqueKey();
   final _gridViewKey = GlobalKey<_MyHomePageState>();
   final itemsModel = ItemsModel();
+  final _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Consumer<ItemsModel>(builder: (context, model, child) {
             return ReorderableBuilder(
                 key: _globalKey,
+                scrollController: _scrollController,
                 enableScrollingWhileDragging: true,
                 enableDraggable: true,
                 fadeInDuration: Duration.zero,
@@ -101,24 +103,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 builder: (children) {
                   return Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 5),
-                                child: SizedBox(
-                                    width: 600,
-                                    height: 600,
-                                    child: GridView(
-                                      key: _gridViewKey,
-                                      shrinkWrap: true,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 8,
-                                        mainAxisSpacing: 0,
-                                        crossAxisSpacing: 0,
-                                        childAspectRatio: 1,
-                                      ),
-                                      children: children,
-                                    )))
-                          ;
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                      child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 600),
+                          child: GridView(
+                            key: _gridViewKey,
+                            controller: _scrollController,
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 8,
+                              mainAxisSpacing: 0,
+                              crossAxisSpacing: 0,
+                              childAspectRatio: 1,
+                            ),
+                            children: children,
+                          )));
                 },
                 children: model.items.mapIndexed((index, item) {
                   final FlipCardController _controller = FlipCardController();

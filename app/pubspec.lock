@@ -90,10 +90,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_reorderable_grid_view
-      sha256: "3ed0e77be6315d03c6eaf98685784a2cb842c9af37d8d31d74fb06b54367c86b"
+      sha256: c371a2db54ea4d315fd5bf72c22d3ce55c37726f011f43c919dcb624e235b7f5
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0-dev.3"
+    version: "5.0.0-dev.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
