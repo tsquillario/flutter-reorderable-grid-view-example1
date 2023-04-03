@@ -102,9 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (children) {
                   return SingleChildScrollView(
                       scrollDirection: Axis.vertical,
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Column(children: [
+                      child: Column(children: [
                             Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 0, horizontal: 5),
@@ -125,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       children: children,
                                     )))
-                          ])));
+                          ]));
                 },
                 children: model.items.mapIndexed((index, item) {
                   final FlipCardController _controller = FlipCardController();
