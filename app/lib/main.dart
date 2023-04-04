@@ -62,29 +62,36 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Widget _buildCard(String title, Color? backColor, bool locked) {
-      return Card(
-        color: backColor,
-        key: ValueKey(title),
-        margin: EdgeInsets.zero,
-        elevation: 2,
-        shadowColor: Colors.black,
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 11),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
+      return  Card(
+            color: backColor,
+            key: ValueKey(title),
+            margin: EdgeInsets.zero,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            elevation: 2,
+            shadowColor: Colors.black,
+            child: Center(
+              child: Text(
+                title,
+                style: TextStyle(fontSize: 11),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
     }
 
     return Scaffold(
+      backgroundColor: Colors.amber,
         appBar: AppBar(
           title: Text(widget.title),
         ),
         body: Center(
-          child: Padding(padding: EdgeInsets.all(5), child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 600),
+            child: Padding(
+          padding: EdgeInsets.all(5),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 800),
             child: ChangeNotifierProvider.value(
               value: itemsModel,
               child: Consumer<ItemsModel>(builder: (context, model, child) {
@@ -96,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     //fadeInDuration: Duration.zero,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 8,
+                      crossAxisCount: 9,
                       mainAxisSpacing: 5,
                       crossAxisSpacing: 5,
                       childAspectRatio: 1,

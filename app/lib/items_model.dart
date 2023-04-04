@@ -4,7 +4,7 @@ class ItemsModel extends ChangeNotifier {
   List<String> items = [];
 
   ItemsModel() {
-    items = List<String>.generate(64, (int index) => index.toString(),
+    items = List<String>.generate(81, (int index) => index.toString(),
         growable: true);
   }
 
@@ -16,5 +16,6 @@ class ItemsModel extends ChangeNotifier {
   void onReorder({required int oldIndex, required int newIndex}) {
     final item = items.removeAt(oldIndex);
     items.insert(newIndex, item);
+    notifyListeners();
   }
 }
