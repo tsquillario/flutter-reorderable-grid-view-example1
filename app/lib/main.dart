@@ -1,8 +1,7 @@
 import 'package:app/items_model.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_reorderable_grid_view/entities/reorder_update_entity.dart';
-import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
+import 'package:reorderable_grid/reorderable_grid.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:collection/collection.dart';
 import 'package:provider/provider.dart';
@@ -65,80 +64,65 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget _buildCard(String title, Color? backColor, bool locked) {
       return Card(
         color: backColor,
-        key: widget.key,
+        key: ValueKey(title),
+        margin: EdgeInsets.zero,
         elevation: 2,
         shadowColor: Colors.black,
-        child: Container(
-          child: Padding(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Text(
-                  title,
-                  style: TextStyle(fontSize: 11),
-                  textAlign: TextAlign.center,
-                ),
-              )),
+        child: Center(
+          child: Text(
+            title,
+            style: TextStyle(fontSize: 11),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: ChangeNotifierProvider.value(
-          value: itemsModel,
-          child: Consumer<ItemsModel>(builder: (context, model, child) {
-            return ReorderableBuilder(
-                key: _globalKey,
-                scrollController: _scrollController,
-                enableScrollingWhileDragging: true,
-                enableDraggable: true,
-                fadeInDuration: Duration.zero,
-                onReorder: (ReorderedListFunction reorderedListFunction) {
-                  var items =
-                      reorderedListFunction(model.items) as List<String>;
-                  model.reorderSongs(reorderedItems: items);
-                },
-                builder: (children) {
-                  return Padding(
-                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-                      child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 600),
-                          child: GridView(
-                            key: _gridViewKey,
-                            controller: _scrollController,
-                            shrinkWrap: true,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 8,
-                              mainAxisSpacing: 0,
-                              crossAxisSpacing: 0,
-                              childAspectRatio: 1,
-                            ),
-                            children: children,
-                          )));
-                },
-                children: model.items.mapIndexed((index, item) {
-                  final FlipCardController _controller = FlipCardController();
-                  return FlipCard(
-                    key: ValueKey(item),
-                    controller: _controller,
-                    fill: Fill
-                        .fillBack, // Fill the back side of the card to make in the same size as the front.
-                    direction: FlipDirection.HORIZONTAL,
-                    side: CardSide.FRONT,
-                    flipOnTouch: true,
-                    autoFlipDuration: null,
-                    onFlip: () {},
-                    front: _buildCard(item, Colors.grey, false),
-                    back: _buildCard(item, Colors.greenAccent, false),
-                  );
-                }).toList());
-          }),
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        body: Center(
+          child: Padding(padding: EdgeInsets.all(5), child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 600),
+            child: ChangeNotifierProvider.value(
+              value: itemsModel,
+              child: Consumer<ItemsModel>(builder: (context, model, child) {
+                return ReorderableGridView(
+                    key: _globalKey,
+                    scrollController: _scrollController,
+                    //enableScrollingWhileDragging: true,
+                    //enableDraggable: true,
+                    //fadeInDuration: Duration.zero,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 8,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 5,
+                      childAspectRatio: 1,
+                    ),
+                    onReorder: (oldIndex, newIndex) =>
+                        model.onReorder(oldIndex: oldIndex, newIndex: newIndex),
+                    children: model.items.mapIndexed((index, item) {
+                      final FlipCardController _controller =
+                          FlipCardController();
+                      return FlipCard(
+                        key: ValueKey(item),
+                        controller: _controller,
+                        fill: Fill
+                            .fillBack, // Fill the back side of the card to make in the same size as the front.
+                        direction: FlipDirection.HORIZONTAL,
+                        side: CardSide.FRONT,
+                        flipOnTouch: true,
+                        autoFlipDuration: null,
+                        onFlip: () {},
+                        front: _buildCard(item, Colors.grey, false),
+                        back: _buildCard(item, Colors.greenAccent, false),
+                      );
+                    }).toList());
+              }),
+            ),
+          ), // This trailing comma makes auto-formatting nicer for build methods.
+        )));
   }
 }
